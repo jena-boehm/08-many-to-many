@@ -55,4 +55,16 @@ describe('students routes', () => {
 
     expect(response.body).toEqual({ ...newStudent, id: '2' });
   });
+
+  it('updates a student by id', async() => {
+    const updatedStudent = { name: 'Izzy' };
+
+    const response = await request(app)
+      .put(`/students/${student.id}`)
+      .send(updatedStudent)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toEqual({ ...updatedStudent, id: '1' });
+  });
 });
