@@ -8,7 +8,6 @@ describe('students routes', () => {
   let student;
     
   beforeEach(async() => {
-
     await pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
 
     student = await Student.insert({ name: 'Jena' });
@@ -17,6 +16,7 @@ describe('students routes', () => {
   afterAll(() => {
     return pool.end();
   });
+
 
   it('returns all students', async() => {
     const students = await Promise.all([
@@ -32,6 +32,7 @@ describe('students routes', () => {
     expect(response.body).toHaveLength(students.length + 1);
   });
 
+
   it ('returns a student by id', async() => {
 
     const response = await request(app)
@@ -41,6 +42,7 @@ describe('students routes', () => {
 
     expect(response.body).toEqual(student);
   });
+
 
   it('creates a new student', async() => {
     const newStudent = {
@@ -56,6 +58,7 @@ describe('students routes', () => {
     expect(response.body).toEqual({ ...newStudent, id: '2' });
   });
 
+
   it('updates a student by id', async() => {
     const updatedStudent = { name: 'Izzy' };
 
@@ -66,5 +69,16 @@ describe('students routes', () => {
       .expect(200);
 
     expect(response.body).toEqual({ ...updatedStudent, id: '1' });
+  });
+
+  
+  it ('deletes a student by id', async() => {
+
+    const response = await request(app)
+      .delete(`/students/${student.id}`)
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    expect(response.body).toEqual(student);
   });
 });
