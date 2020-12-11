@@ -3,7 +3,6 @@ const request = require('supertest');
 const pool = require('../lib/utils/pool');
 const app = require('../lib/app');
 const Student = require('../lib/models/Student');
-const Course = require('../lib/models/Course');
 
 describe('students routes', () => {
     
@@ -86,7 +85,7 @@ describe('students routes', () => {
 
   
   it ('deletes a student by id', async() => {
-    
+
     const student = await Student.insert({
       name: 'Jena'
     });
