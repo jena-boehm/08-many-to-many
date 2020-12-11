@@ -3,6 +3,7 @@ const request = require('supertest');
 const pool = require('../lib/utils/pool');
 const app = require('../lib/app');
 const Student = require('../lib/models/Student');
+const Course = require('../lib/models/Course');
 
 describe('students routes', () => {
     
@@ -30,7 +31,12 @@ describe('students routes', () => {
   });
 
 
-  test.skip('returns a student by id', async() => {
+  it('returns a student by id', async() => {
+    await Promise.all([
+      { name: 'Intro to Music Theory' },
+      { name: 'Intro to C++' },
+      { name: 'Intro to Philosophy' }
+    ].map(course => Course.insert(course)));
 
     const student = await Student.insert({
       name: 'Jena',
@@ -44,7 +50,7 @@ describe('students routes', () => {
 
     expect(response.body).toEqual({ 
       ...student, 
-      courses: ['Intro to Music Theory', 'Intro to C++'] 
+      courses: ['Intro to Philosophy', 'Intro to C++'] 
     });
   });
 
