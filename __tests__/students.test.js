@@ -3,14 +3,12 @@ const request = require('supertest');
 const pool = require('../lib/utils/pool');
 const app = require('../lib/app');
 const Student = require('../lib/models/Student');
+const Course = require('../lib/models/Course');
 
 describe('students routes', () => {
-  let student;
     
   beforeEach(async() => {
     await pool.query(fs.readFileSync('./sql/setup.sql', 'utf-8'));
-
-    student = await Student.insert({ name: 'Jena' });
   });
 
   afterAll(() => {
@@ -29,18 +27,26 @@ describe('students routes', () => {
       .get('/students');
 
     expect(response.body).toEqual(expect.arrayContaining(students));
-    expect(response.body).toHaveLength(students.length + 1);
+    expect(response.body).toHaveLength(students.length);
   });
 
 
-  it ('returns a student by id', async() => {
+  test.skip('returns a student by id', async() => {
+
+    const student = await Student.insert({
+      name: 'Jena',
+      courses: ['Intro to Philosophy', 'Intro to C++']
+    });
 
     const response = await request(app)
       .get(`/students/${student.id}`)
       .expect('Content-Type', /json/)
       .expect(200);
 
-    expect(response.body).toEqual(student);
+    expect(response.body).toEqual({ 
+      ...student, 
+      courses: ['Intro to Music Theory', 'Intro to C++'] 
+    });
   });
 
 
@@ -55,24 +61,35 @@ describe('students routes', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-    expect(response.body).toEqual({ ...newStudent, id: '2' });
+    expect(response.body).toEqual({ ...newStudent, id: '1' });
   });
 
 
   it('updates a student by id', async() => {
-    const updatedStudent = { name: 'Izzy' };
+    const student = await Student.insert({
+      name: 'Jena'
+    });
 
     const response = await request(app)
       .put(`/students/${student.id}`)
-      .send(updatedStudent)
+      .send({ 
+        name: 'Izzy' 
+      })
       .expect('Content-Type', /json/)
       .expect(200);
 
-    expect(response.body).toEqual({ ...updatedStudent, id: '1' });
+    expect(response.body).toEqual({ 
+      id: student.id,
+      name: 'Izzy' 
+    });
   });
 
   
   it ('deletes a student by id', async() => {
+    
+    const student = await Student.insert({
+      name: 'Jena'
+    });
 
     const response = await request(app)
       .delete(`/students/${student.id}`)
