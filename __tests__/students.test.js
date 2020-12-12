@@ -50,8 +50,8 @@ describe('students routes', () => {
 
     expect(response.body).toEqual({ 
       ...student, 
-      courses: ['Intro to Philosophy', 'Intro to C++'] 
-    });
+      courses: expect.arrayContaining(['Intro to Philosophy', 'Intro to C++'] 
+      ) });
   });
 
 
